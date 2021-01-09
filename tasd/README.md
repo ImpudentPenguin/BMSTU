@@ -1,1 +1,5 @@
 # Лабораторные работы по курсу "Типы и структуры данных" (5 семестр, 2020)
+* [Муравьиный алгоритм](https://github.com/ImpudentPenguin/BMSTU/tree/main/tasd/lab03)
+* [разреженный строчный формат](https://github.com/ImpudentPenguin/BMSTU/tree/main/tasd/lab04)
+* [Сжатие по Хаффману](https://github.com/ImpudentPenguin/BMSTU/tree/main/tasd/lab05)
+* [Стек и очередь](https://github.com/ImpudentPenguin/BMSTU/tree/main/tasd/lab06)
