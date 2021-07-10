@@ -5,7 +5,7 @@
 * [Тестирование и отладка ПО](https://github.com/ImpudentPenguin/antAlgorithm) *(отдельные репозитории BE и FE)*
 
 # 6 семестр
-* Программирование (С#)
+* [Программирование (С#)](https://github.com/ImpudentPenguin/BMSTU/tree/main/programming_c_sharp)
 * Моделирование
 * Основы программной инженерии
 * Основы Web - разработки
