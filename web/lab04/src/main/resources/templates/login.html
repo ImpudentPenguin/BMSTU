@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Wire+One&display=swap" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Авторизация - PortMobiApps</title>
+    <link href="./css/main.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="header">
+    <span class="title" onclick="window.location.href='/'">PortMobiApps</span>
+    <div class="authorize-buttons">
+        <a href="registration" class="authorize_button"><img src="/images/signup.svg" alt="Sign up"/></a>
+    </div>
+</div>
+<div class="container">
+    <div class="content">
+        <div class="content_title">Войти</div>
+
+        <div class="content_wrapper">
+            <form class="mainForm" id="form">
+                <div class="formField">
+                    <label for="email" class="formField_label">E-mail</label>
+                    <input class="formField_input" id="email" type="text" />
+                </div>
+                <div class="formField">
+                    <label for="password" class="formField_label">Пароль</label>
+                    <input class="formField_input" id="password" type="password"/>
+                </div>
+                <button class="button">Войти</button>
+            </form>
+            <a href="registration" class="link">Не зарегистрированы?</a>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user != null) {
+        alert("Вы уже авторизованы.");
+        window.location.replace("/");
+    }
+
+    document.getElementById("form").addEventListener("submit", onSubmit);
+
+    async function onSubmit(event, v) {
+      event.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const url = "/api/v1/login";
+      const data = { email, password };
+
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const json = await response.json();
+      if (json.result == true) {
+        window.location.replace("/");
+        localStorage.setItem("user", JSON.stringify(json.data));
+      } else {
+        alert(json.message);
+      }
+    }
+</script>
+</html>

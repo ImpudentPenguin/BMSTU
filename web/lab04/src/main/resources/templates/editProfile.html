@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Wire+One&display=swap" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Редактирование профиля - PortMobiApps</title>
+    <link href="./css/main.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="header">
+    <span class="title" onclick="window.location.href='/'">PortMobiApps</span>
+    <div class="authorize-buttons">
+        <a onclick="onLogout()" class="authorize_button"><img src="/images/logout.svg" alt="Logout"/></a>
+    </div>
+</div>
+<div class="container">
+    <div class="content">
+        <div class="content_title">Редактирование профиля</div>
+
+        <div class="content_wrapper">
+            <form class="mainForm" id="form">
+                <div class="formField">
+                    <label for="about" class="formField_label">Обо мне</label>
+                    <input class="formField_input" id="about" type="text"/>
+                </div>
+                <div class="formField">
+                    <label for="telegram" class="formField_label">Telegram</label>
+                    <input class="formField_input" id="telegram" type="text"/>
+                </div>
+                <div class="formField">
+                    <label for="email" class="formField_label">E-mail</label>
+                    <input class="formField_input" id="email" type="text"/>
+                </div>
+                <button class="button">Подтвердить</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user == null) {
+        alert("Вы не авторизованы.");
+        window.location.replace("/login");
+    }
+
+    function onLogout() {
+        let isLogout = confirm("Вы хотите выйти?");
+
+        if (isLogout) {
+            localStorage.clear();
+            location.reload(true);
+        }
+    }
+
+    document.getElementById("form").addEventListener("submit", onSubmit);
+
+    async function onSubmit(event, v) {
+        event.preventDefault();
+        const about = document.getElementById("about").value;
+        const telegram = document.getElementById("telegram").value;
+        const email = document.getElementById("email").value;
+        const userId = user.id;
+
+        const url = "/api/v1/user/" + user.id;
+        const data = { about, telegram, email };
+
+        const response = await fetch(url, {
+            method: "PUT",
+            body: JSON.stringify(data),
+            headers: {
+              "Content-Type": "application/json",
+            },
+        });
+        const json = await response.json();
+        if (json.result == true) {
+            alert("Профиль обновлен");
+            window.location.replace("/");
+        } else {
+            alert(json.message);
+        }
+    }
+</script>
+</html>
+

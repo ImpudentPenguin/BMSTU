@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Wire+One&display=swap" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Редактирование приложения - PortMobiApps</title>
+    <link href="../css/main.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="header">
+    <span class="title" onclick="window.location.href='/'">PortMobiApps</span>
+    <div class="authorize-buttons">
+        <a onclick="onLogout()"  class="authorize_button"><img src="/images/logout.svg" alt="Logout"/></a>
+    </div>
+</div>
+<div class="container container--autoHeight">
+    <div class="editApp">
+        <form class="editForm" id="form">
+            <div class="formField">
+                <input class="formField_input formField_input--big" id="name" type="text" placeholder="Название приложения"/>
+            </div>
+            <div class="formField formField--description">
+                <textarea class="formField_textarea" id="info" type="text" placeholder="Информация о приложении"></textarea>
+            </div>
+            <div class="formField">
+                <input class="formField_input" id="tags" type="text" placeholder="Ключевые тэги"/>
+            </div>
+            <div class="rows">
+                <div class="row">
+                    <div class="formField">
+                        <input class="formField_input" id="qrcode" type="text" placeholder="Ссылка QR-code"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="formField">
+                        <input class="formField_input" id="link" type="text" placeholder="Ссылка на файл приложения"/>
+                    </div>
+                </div>
+            </div>
+            <div class="rows">
+                <div class="row">
+                    <div class="formField">
+                        <input class="formField_input" id="github" type="text" placeholder="Ссылка на код на GitHub"/>
+                    </div>
+                </div>
+                <div class="row row--right">
+                    <button class="button button--red" id="delete_button">Удалить</button>
+                    <button class="button" id="upload_button">Загрузить</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    const id = window.location.pathname.replace('/changeapp/', '');
+    const url = "/api/v1/apps/" + id;
+
+    if (user == null) {
+        alert("Вы не авторизованы.");
+        window.location.replace("/login");
+    }
+
+    function onLogout() {
+        let isLogout = confirm("Вы хотите выйти?");
+
+        if (isLogout) {
+            localStorage.clear();
+            location.reload(true);
+        }
+    }
+
+    document.getElementById("upload_button").addEventListener("submit", onSubmit);
+    document.getElementById("delete_button").addEventListener("click", onDelete);
+
+    async function onDelete(event, v) {
+        event.preventDefault();
+        const response = await fetch(url, {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+        });
+       const json = await response.json();
+       if (json.result == true) {
+         alert(json.data);
+         window.location.replace("/profile/" + user.login);
+       } else {
+         alert(json.message);
+       }
+    }
+
+    async function onSubmit(event, v) {
+        event.preventDefault();
+        const name = document.getElementById("name").value;
+        const info = document.getElementById("info").value;
+        const tags = document.getElementById("tags").value;
+        const qrCode = document.getElementById("qrcode").value;
+        const link = document.getElementById("link").value;
+        const github = document.getElementById("github").value;
+        const author = user.login;
+        const userId = user.id;
+
+        const data = { name, author, userId, info, tags, qrCode, link, github };
+
+        const response = await fetch(url, {
+          method: "PUT",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const json = await response.json();
+        if (json.result == true) {
+          alert(json.data);
+          window.location.replace("/profile/" + user.login);
+        } else {
+          alert(json.message);
+        }
+    }
+</script>
+</html>

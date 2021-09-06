@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Wire+One&display=swap" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Регистрация - PortMobiApps</title>
+    <link href="./css/main.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="header">
+    <span class="title" onclick="window.location.href='/'">PortMobiApps</span>
+    <div class="authorize-buttons">
+        <a href="login" class="authorize_button"><img src="/images/login.svg" alt="Login"/></a>
+    </div>
+</div>
+<div class="container">
+    <div class="content">
+        <div class="content_title">Регистрация</div>
+
+        <div class="content_wrapper">
+            <form class="mainForm" id="form">
+                <div class="formField">
+                    <label for="login" class="formField_label">Логин</label>
+                    <input class="formField_input" id="login" type="text" required name="login"/>
+                </div>
+                <div class="formField">
+                    <label for="email" class="formField_label">E-mail</label>
+                    <input class="formField_input" id="email" type="text" required name="email"/>
+                </div>
+                <div class="formField">
+                    <label for="password" class="formField_label">Пароль</label>
+                    <input class="formField_input" id="password" type="password" required name="password"/>
+                </div>
+                <div class="formField">
+                    <label for="repeatedPassword" class="formField_label">Повторите пароль</label>
+                    <input class="formField_input" id="repeatedPassword" type="password" required name="repeatedPassword"/>
+                </div>
+                <button class="button">Зарегистрироваться</button>
+            </form>
+            <a href="login" class="link">Уже зарегистрированы?</a>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user != null) {
+        alert("Вы уже авторизованы.");
+        window.location.replace("/");
+    }
+
+    document.getElementById("form").addEventListener("submit", onSubmit);
+
+    async function onSubmit(event, v) {
+      event.preventDefault();
+      const email = document.getElementById("email").value;
+      const login = document.getElementById("login").value;
+      const password = document.getElementById("password").value;
+      const repeatedPassword = document.getElementById("repeatedPassword").value;
+
+      const url = "/api/v1/registr";
+      const data = { login, email, password, repeatedPassword };
+
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const json = await response.json();
+      if (json.result == true) {
+        localStorage.setItem("user", JSON.stringify(json.data));
+        alert("Вы успешно зарегистрированы в системе.");
+        window.location.replace("/");
+      } else {
+        alert(json.message);
+      }
+    }
+</script>
+</html>
+

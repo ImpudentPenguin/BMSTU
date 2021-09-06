@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Wire+One&display=swap" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Профиль - PortMobiApps</title>
+    <link href="../css/main.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="header">
+    <span class="title" onclick="window.location.href='/'">All projects</span>
+    <div class="authorize-buttons" id="authorize_buttons">
+        <a href="../registration" class="authorize_button" id="registration"><img src="/images/signup.svg" alt="Sign up"/></a>
+        <a href="../login" class="authorize_button" id="login"><img src="/images/login.svg" alt="Login"/></a>
+    </div>
+</div>
+<div class="container">
+    <div class="profile-info">
+        <div class="profile-item">
+            <div class="profile-item_label">Обо мне</div>
+            <div class="profile-item_text" id="about"></div>
+        </div>
+        <div class="profile-item">
+            <div class="profile-item_label">Telegram</div>
+            <div class="profile-item_text" id="telegram"></div>
+        </div>
+        <div class="profile-item">
+            <div class="profile-item_label">E-mail</div>
+            <div class="profile-item_text" id="email"></div>
+        </div>
+        <div class="profile-buttons" id="profile-buttons">
+            <button class="button" onclick='window.location.href="/editprofile"'>Редактировать профиль</button>
+            <button class="button" onclick='window.location.href="/uploadapp"'>Загрузить приложение</button>
+        </div>
+    </div>
+    <div class="profile-apps" id="profile_apps">
+
+    </div>
+</div>
+</body>
+<script>
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user != null) {
+        document.getElementById('registration').hidden = true;
+        document.getElementById('login').hidden = true;
+        authorize_buttons.insertAdjacentHTML('afterbegin', '<a onclick="onLogout()" class="authorize_button"><img src="/images/logout.svg" alt="Logout"/></a>');
+    }
+
+    function onLogout() {
+        let isLogout = confirm("Вы хотите выйти?");
+
+        if (isLogout) {
+            localStorage.clear();
+            location.reload(true);
+        }
+    }
+
+    async function getInfo() {
+        const username = window.location.pathname.replace('/profile/', '');
+        const userInfoUrl = "/api/v1/user/" + username;
+
+        const userInfoResponse = await fetch(userInfoUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const userJson = await userInfoResponse.json();
+        if (userJson.result == true) {
+            document.querySelector('.title').textContent = userJson.data.login;
+            document.querySelector('#about').textContent = userJson.data.about != null ? userJson.data.about : "Не заполнено";
+            document.querySelector('#telegram').textContent = userJson.data.telegram != null ? userJson.data.telegram : "Не заполнено";
+            document.querySelector('#email').textContent = userJson.data.email;
+
+            if (user != null && userJson.data.id != user.id) {
+                document.getElementById('profile-buttons').hidden = true;
+            }
+        } else {
+            alert(userJson.message);
+            window.location.replace("/");
+        }
+
+        const appsUrl = "/api/v1/apps/" + userJson.data.id;
+        const appsResponse = await fetch(appsUrl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const json = await appsResponse.json();
+
+        if (json.result == true) {
+            let apps = json.data;
+
+            for (var index in apps) {
+                if (user != null && user.id == userJson.data.id) {
+                profile_apps.insertAdjacentHTML('beforeend', `
+                    <div class="profile-app" id="profile_app">
+                        <div class="profile-app_column">
+                            <div class="profile-app_name">${ apps[index].name }</div>
+                            <div class="profile-app_description">${ apps[index].info }</div>
+                            <div class="profile-app_tags">${ apps[index].tags }</div>
+                        </div>
+                        <div>
+                            <img src="${ apps[index].qrCode }" alt="" class="profile-app_qr">
+                            <div class="profile-app_buttons" id="profile_app_buttons">
+                                <a href="../changeapp/${ apps[index].id }" class="profile-app_button" id="change_app_button"><img class="change_app_button" src="/images/edit.svg"alt="Change App"/></a>
+                                <a href="${ apps[index].github }" class="profile-app_button"><img class="github_button" src="/images/github.svg"
+                                                                            alt="GitHub"/></a>
+                                <a href="${ apps[index].link }" class="profile-app_button"><img class="download_button" src="/images/download.svg"
+                                                                            alt="Download"/></a>
+                            </div>
+                        </div>
+                    </div>
+                    `);
+                } else {
+                    profile_apps.insertAdjacentHTML('beforeend', `
+                    <div class="profile-app" id="profile_app">
+                        <div class="profile-app_column">
+                            <div class="profile-app_name">${ apps[index].name }</div>
+                            <div class="profile-app_description">${ apps[index].info }</div>
+                            <div class="profile-app_tags">${ apps[index].tags }</div>
+                        </div>
+                        <div>
+                            <img src="${ apps[index].qrCode }" alt="" class="profile-app_qr">
+                            <div class="profile-app_buttons" id="profile_app_buttons">
+                                <a href="${ apps[index].github }" class="profile-app_button"><img class="github_button" src="/images/github.svg"
+                                                                            alt="GitHub"/></a>
+                                <a href="${ apps[index].link }" class="profile-app_button"><img class="download_button" src="/images/download.svg"
+                                                                            alt="Download"/></a>
+                            </div>
+                        </div>
+                    </div>
+                    `);
+                }
+            }
+        } else {
+            alert(userJson.message);
+        }
+    }
+
+    getInfo();
+</script>
+</html>
