@@ -1,0 +1,9 @@
+<html>
+<head>
+    <title>Дополнительная страница</title>
+</head>
+<body>
+<h1 style="text-align: center;">Hello!</h1>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="../img/extra.gif" alt="" /></p>
+</body>
+</html>

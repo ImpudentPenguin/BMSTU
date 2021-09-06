@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Wire+One&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet"/>
+    <title>Главная - PortMobiApps</title>
+    <link href="./css/main.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="header">
+    <span class="title">All projects</span>
+    <div class="authorize-buttons" id="authorize_buttons">
+        <a href="registration" class="authorize_button" id="registration"><img src="/images/signup.svg" alt="Sign up"/></a>
+        <a href="login" class="authorize_button" id="login"><img src="/images/login.svg" alt="Login"/></a>
+    </div>
+</div>
+<div class="container container--autoHeight">
+    <div class="apps" id="main_apps">
+
+    </div>
+</div>
+</body>
+<script>
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user != null) {
+        document.getElementById('registration').hidden = true;
+        document.getElementById('login').hidden = true;
+
+        let profileUrl = "profile/" + user.login;
+        authorize_buttons.insertAdjacentHTML('afterbegin', '<a class="authorize_button" id="profile"><img src="/images/profile.svg" alt="Profile"/></a>');
+        authorize_buttons.insertAdjacentHTML('beforeend', '<a onclick="onLogout()" class="authorize_button"><img src="/images/logout.svg" alt="Logout"/></a>');
+        document.querySelector('#profile').setAttribute('href', profileUrl);
+    }
+
+    function onLogout() {
+        let isLogout = confirm("Вы хотите выйти?");
+
+        if (isLogout) {
+            localStorage.clear();
+            location.reload(true);
+        }
+    }
+
+    async function getApps() {
+        const appsUrl = "/api/v1/apps";
+        const appsResponse = await fetch(appsUrl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const json = await appsResponse.json();
+
+        if (json.result == true) {
+            let apps = json.data;
+
+            for (var index in apps) {
+                main_apps.insertAdjacentHTML('beforeend', `
+                    <div class="app" onclick="location.href='${  "profile/" + apps[index].author }'">
+                        <div class="app_name">${ apps[index].name }</div>
+                        <div class="app_tags">${ apps[index].tags }</div>
+                        <div class="app_author"><span>${ apps[index].author }</span></div>
+                    </div>
+                    `);
+            }
+        } else {
+            alert(userJson.message);
+        }
+    }
+
+    getApps()
+</script>
+</html>
