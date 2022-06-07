@@ -20,7 +20,7 @@ class MainController : Controller() {
         launch(prop) {
             val image = urlToBytes(link)
             val mat = image.binary()
-            val res = method.callback.invoke(mat.second).convertToBufferedImage().toByteArr()
+            val res = method.callback.invoke(mat).convertToBufferedImage().toByteArr()
 
             ResultModel(
                 title = method.title,

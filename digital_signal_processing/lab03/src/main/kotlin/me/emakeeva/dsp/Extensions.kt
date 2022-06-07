@@ -21,15 +21,14 @@ fun Mat.convertToBufferedImage(): BufferedImage {
     return Java2DFrameConverter().convert(OpenCVFrameConverter.ToMat().convert(this))
 }
 
-fun BufferedImage.binary(): Pair<Mat, Mat> {
+fun BufferedImage.binary(): Mat {
     val image = OpenCVFrameConverter.ToMat().convert(Java2DFrameConverter().convert(this))
     val gray = Mat(image.rows(), image.cols(), opencv_core.CV_8UC1)
     val bin = Mat()
     cv.cvtColor(image, gray, cv.CV_BGR2GRAY)
     cv.threshold(gray, bin, 0.0, 255.0, cv.THRESH_OTSU)
 
-
-    return gray to bin
+    return bin
 }
 
 fun Mat.convert(method: Method): Mat {
