@@ -17,3 +17,6 @@
 * [Защита информации](/security)
 * [Обработка цифровых сигналов](/digital_signal_processing)
 * [Компьютерные сети](/networks)
+* [ВКР бакалавра](https://github.com/ImpudentPenguin/bmstu_bachelors_diploma)
+
+# *FINISHED*
